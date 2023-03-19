@@ -1,0 +1,13 @@
+logs
+.history
+
+node_modules
+bower_components
+coordinate.png
+
+*.sublime*
+
+psd
+thumb
+sketch
+

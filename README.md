@@ -1,0 +1,1 @@
+Archeage Coordinate Discord Bot
