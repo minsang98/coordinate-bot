@@ -18,6 +18,8 @@ client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
+let event = false;
+
 client.on("messageCreate", async (message) => {
   // message 작성자가 봇이면 그냥 return
   if (message.author.bot) return;
@@ -36,23 +38,28 @@ client.on("messageCreate", async (message) => {
     ) {
       return message.reply("좌표 형식이 올바르지 않습니다.");
     }
+    if (!event) {
+      event = true;
+      const replyMsg = await message.reply(
+        `좌표 ${args.join(" ")}를 검색합니다.`
+      );
 
-    const replyMsg = await message.reply(
-      `좌표 ${args.join(" ")}를 검색합니다.`
-    );
+      fs.access("coordinate.png", fs.constants.F_OK, (err) => {
+        if (err) return;
 
-    fs.access("coordinate.png", fs.constants.F_OK, (err) => {
-      if (err) return;
-
-      // 파일 삭제
-      fs.unlink("coordinate.png", (err) => {
-        if (err) throw err;
+        // 파일 삭제
+        fs.unlink("coordinate.png", (err) => {
+          if (err) throw err;
+        });
       });
-    });
 
-    await coordinate(args);
-    await replyMsg.delete({ timeout: 100 });
-    await message.reply({ files: [{ attachment: "./coordinate.png" }] });
+      await coordinate(args);
+      await replyMsg.delete({ timeout: 100 });
+      await message.reply({ files: [{ attachment: "./coordinate.png" }] });
+      event = false;
+    } else {
+      return message.reply("기다려");
+    }
   }
 });
 
